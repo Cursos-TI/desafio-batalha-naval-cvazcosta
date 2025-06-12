@@ -1,70 +1,137 @@
-# ⚠️ Importante!!!
-Você pode escolher qualquer um dos desafios para desenvolver. Sinta-se à vontade para começar pelo desafio que mais lhe interessa.
+# Desafio Nível Mestre
 
-# Desafio Batalha Naval - Três Níveis de Complexidade
+## Acerca das soluções encontradas
 
-Bem-vindo ao desafio "Batalha Naval"! Este projeto desafiará suas habilidades de programação utilizando vetores e matrizes para simular um jogo de Batalha Naval, dividido em três níveis: Novato, Aventureiro e Mestre. Em cada nível, novas funcionalidades serão adicionadas, tornando o desafio progressivamente mais complexo.
+As soluções aqui apresentadas provavelmente não são as melhores possíveis. Elas refletem o grau de proficiência de um estudante iniciante no mundo da programação após a conclusão de um curso introdutório à linguagem de programação em C.
 
-## 🏅 Nível Novato
+Elas, no entanto, contêm a honestidade de quem evitou o caminho mais fácil e tentou encontrar saídas utilizando o próprio raciocínio e as técnicas aprendidas ao longo deste curso e em alguns livros sobre o tema.
 
-Neste nível inicial, você implementará a lógica básica de posicionamento de navios em um tabuleiro de Batalha Naval utilizando vetores bidimensionais.
+Confesso que inicialmente fiquei surpreso com a **aparente** simplicidade das atividades. Contudo, quando tive de parar para pensar na solução me vi obrigado a pensar de forma algorítmica, buscando resolver o problema passo a passo e nisso residiu o grande desafio. Quanto mais familiaridade obtenho com a linguagem em si percebo a necessidade de melhorar o meu processo de resolução de problemas.
 
-### 🚩 Objetivos:
-- **Posicionamento dos Navios:** O sistema deve simular a localização de dois navios no tabuleiro, um posicionado verticalmente e outro horizontalmente.
-- **Utilização de Vetores:** Os navios serão posicionados utilizando vetores bidimensionais, com coordenadas X e Y.
-- **Exibição de Coordenadas:** O sistema deve exibir as coordenadas de cada parte dos navios no console utilizando `printf`.
+Primeiro, me propus a criar um loop capaz de desenhar a forma geométrica requisitada e depois fiz a modificação necessária para incluí-la no tabuleiro dos níveis anteriores.
 
-### 📥 Entrada de Dados:
-- Os valores serão inseridos manualmente por meio de variáveis no código.
-
-### 📤 Saída de Dados:
-- Após o posicionamento, o sistema deve exibir as coordenadas dos navios de forma clara e organizada.
+A sequência de artefatos gerados até chegar na solução proposta está exposta a seguir.
 
 ---
 
-## 🏅 Nível Aventureiro
+## Algoritmo do Cone
 
-No nível Aventureiro, você expandirá o tabuleiro e adicionará mais navios, incluindo posicionamentos na diagonal.
+```Plain Text
+1. Determinar o índice da coluna base
+  1.1 Dividir o total de colunas da matriz (5) por 2
 
-### 🆕 Diferença em relação ao Nível Novato:
-- **Tabuleiro 10x10:** O tabuleiro será expandido para uma matriz 10x10.
-- **Posicionamento de Quatro Navios:** O sistema deverá posicionar quatro navios, incluindo dois na diagonal.
-- **Exibição Completa do Tabuleiro:** O sistema exibirá toda a matriz, onde 0 indica uma posição sem navio e 3 indica uma posição ocupada.
+2. Criar a estrutura de repetição para criar a matriz cônica
+  2.1 Se for a 1ª linha da matriz:
+    2.1.1 Se a coluna percorrida for igual ao valor da coluna base
+      2.1.1.1 Imprimir 1
+    2.1.2 Senão
+      2.1.2.1 Imprimir 0
 
-### 🚩 Novas Funcionalidades:
-- **Matriz 10x10:** Implementação de uma matriz maior para representar o tabuleiro.
-- **Posicionamento de Navios na Diagonal:** Adição de navios posicionados diagonalmente.
-- **Exibição do Tabuleiro Completo:** O sistema mostrará o tabuleiro completo, indicando as posições ocupadas e livres.
+  2.2 A partir da 2ª linha
+    2.2.1 Se a coluna percorrida estiver no intervalo [(colBase - índiceLinha), (colBase + índiceLinha)]
+      2.2.1.1 Imprimir 1
+    2.2.2 Senão
+      2.2.2.1 Imprimir 0
+```
+
+Evidentemente, para que a forma geométrica tenha simetria, é preciso que o número de colunas informado seja ímpar. Para simplificar, determinei 5 colunas e 3 linhas.
+
+A primeira grande ideia foi compreender que o índice da coluna na 1ª linha (`coluna base`) equivaleria à metade do total de colunas da matriz. Isto permitiu com que a lógica da primeira validação ( `2.1`) fosse colocada em prática a fim de garantir com que o valor único da primeira linha sempre fique na posição central.
+
+Mas acredito que a ideia determinante foi encontrar a relação entre a coluna base e o índice da linha que está sendo percorrida no momento `[(colBase - índiceLinha), (colBase + índiceLinha)]`.
+
+Este foi o grande salto que me permitiu resolver o problema de forma mais generalista, isto é, de forma independente da quantidade de linhas e colunas, o código é capaz de gerar a forma geométrica requisitada.
+
+Desta forma, sempre teremos os valores 1 sendo impressos dentro do intervalo que sempre inclui 1 coluna à esquerda e uma à direita à cada iteração.
 
 ---
 
-## 🏅 Nível Mestre
+## Exemplo do código base
 
-No nível Mestre, o desafio se intensifica com a implementação de habilidades especiais representadas por matrizes específicas no tabuleiro.
+```C
+// Definindo a dimensão da matriz cônica
+#define LINHAS 3
+#define COLUNAS 5
 
-### 🆕 Diferença em relação ao Nível Aventureiro:
-- **Habilidades Especiais:** O sistema deve definir áreas de habilidades utilizando matrizes com padrões específicos: cone, cruz e octaedro.
-- **Estruturas de Repetição Aninhadas:** Utilização de loops aninhados para percorrer e preencher as áreas afetadas pelas habilidades.
+for (l = 0; l < LINHAS; l++)
+{
+  for (c = 0; c < COLUNAS; c++)
+  {
+    if (!l)
+    {
+      if (c == colBase)
+      {
+        printf("1");
+      }
+      else
+      {
+        printf("0");
+      }
+    }
+    else
+    {
+      if ((c >= (colBase - l)) && (c <= (colBase + l)))
+      {
+        printf("1");
+      }
+      else
+      {
+        printf("0");
+      }
+    }
+  }
+}
+```
 
-### 🚩 Novas Funcionalidades:
-- **Matrizes de Habilidades:** Implementação de três matrizes para representar habilidades especiais no tabuleiro.
-- **Padrões de Habilidade:** Criação de padrões específicos (cone, cruz, octaedro) para definir as áreas afetadas.
-- **Exibição das Áreas Atingidas:** O sistema exibirá o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas afetadas.
+---
 
-### Exemplo de Saída:
+### Exemplo de saída do código base
 
-Exemplo e comando:
-printf("%d ",matriz[i][j]);
-
-### Exemplo de saída de habilidade em cone:
-
+```Plain Text
 0 0 1 0 0
 
 0 1 1 1 0
 
 1 1 1 1 1
+```
 
-### Exemplo de saída de habilidade em octaedro:
+## Exemplo do código utilizado
+
+```C
+for (l = 0, lin = 0; l < LINHAS; l++, lin++)
+{
+  for (c = 0, col = 5; c < COLUNAS; c++, col++)
+  {
+    if (!l)
+    {
+      if (c == colBase)
+      {
+        tabuleiro[lin][col] = 1;
+      } else
+      {
+        tabuleiro[lin][col] = 0;
+      }                
+    } else
+    {
+      if ((c >= (colBase - l)) && (c <= (colBase + l)))
+      {
+        tabuleiro[lin][col] = 1;
+      } else
+      {
+        tabuleiro[lin][col] = 0;
+      }                
+    }            
+  }
+}
+```
+
+No código utilizado no programa a diferença é que o valor 0 ou 1 é atribuído à coordenada (linha, coluna) da matriz `tabuleiro`.
+
+Na prática, fiz uso da **forma avançada** de declaração de loops, incluindo as variáveis `lin` e `col` para possibilitar o controle da linha e coluna base onde a matriz cônica será colocada.
+
+---
+
+### Exemplo de saída de habilidade em octaedro
 
 0 0 1 0 0
 
@@ -72,32 +139,10 @@ printf("%d ",matriz[i][j]);
 
 0 0 1 0 0
 
-### Exemplo de saída de habilidade em cruz:
+### Exemplo de saída de habilidade em cruz
 
 0 0 1 0 0
 
 1 1 1 1 1
 
 0 0 1 0 0
-
-
-
-
-
----
-
-## 📋 Requisitos Funcionais Comuns
-- **Entrada de Dados:** Os valores serão inseridos manualmente por meio de variáveis no código.
-- **Utilização de Matrizes:** Os dados devem ser estruturados de maneira eficiente utilizando matrizes.
-- **Exibição de Resultados:** Os resultados devem ser exibidos de forma clara e organizada.
-
-## 📌 Requisitos Não Funcionais Comuns
-- **Performance:** O sistema deve executar operações de forma eficiente, sem atrasos perceptíveis.
-- **Documentação:** O código deve ser bem documentado, com comentários claros sobre a função de cada parte do código.
-- **Manutenibilidade:** O código deve ser organizado e fácil de entender, facilitando futuras manutenções e expansões.
-
----
-
-Boa sorte no desenvolvimento deste desafio! Aproveite para aprimorar suas habilidades em vetores e matrizes enquanto progride pelos níveis.
-
-Equipe de Ensino - MateCheck
