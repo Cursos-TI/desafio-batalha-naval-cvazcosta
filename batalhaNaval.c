@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <math.h>
 
 #define LINHAS 3
 #define COLUNAS 5
@@ -10,14 +9,7 @@ int main() {
     int col, lin;
 
     int colBase = COLUNAS / 2;
-    printf("colBase: %d\n", colBase);
-
     int tabuleiro[10][10] = {0};
-
-    // int navio1[1] = {3};
-    // int navio2[1] = {3};
-    // int navio3[1] = {3};
-    // int navio4[1] = {3};
 
     // // Posicionando navio1 na vertical a partir da lin 3 na col 2
     // for (l = 2; l < 5; l++)
@@ -44,42 +36,47 @@ int main() {
     // }
 
     // Criando uma matriz "cônica"
-    for (l = 0; l < LINHAS; l++)
+    // A variável lin determina qual a linha do tabuleiro que quero colocar o 
+    // topo do cone. Valor máximo: 7
+    // A variável col determina qual a coluna do tabuleiro que quero colocar o 
+    // topo do cone. Valor maximo: 5
+    for (l = 0, lin = 0; l < LINHAS; l++, lin++)
     {
-        for (c = 0; c < COLUNAS; c++)
+        for (c = 0, col = 5; c < COLUNAS; c++, col++)
         {
+            // Se for a primeira linha, colocar o valor 1 apenas no índice central
+            // Senão, colocar os valores nos intervalos definidos
             if (!l)
             {
                 if (c == colBase)
                 {
-                    printf("1 ");
+                    tabuleiro[lin][col] = 1;
                 } else
                 {
-                    printf("0 ");
+                    tabuleiro[lin][col] = 0;
                 }                
             } else
             {
                 if ((c >= (colBase - l)) && (c <= (colBase + l)))
                 {
-                    printf("1 ");
+                    tabuleiro[lin][col] = 1;
                 } else
                 {
-                    printf("0 ");
+                    tabuleiro[lin][col] = 0;
                 }                
             }            
         }
-        printf("\n");
     }
 
-    // // Imprimindo o tabuleiro após as inserções
-    // for (l = 0; l < 10; l++)
-    // {
-    //     for (c = 0; c < 10; c++)
-    //     {
-    //         printf("%d ", tabuleiro[l][c]);
-    //     }
-    //     printf("\n");
-    // }    
+    // Imprimindo o tabuleiro após as inserções
+    for (l = 0; l < 10; l++)
+    {
+        for (c = 0; c < 10; c++)
+        {
+            printf("%d ", tabuleiro[l][c]);
+        }
+        printf("\n");
+    }    
 
     return (0);
 }
