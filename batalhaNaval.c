@@ -7,8 +7,9 @@ int main()
 {
   int l, c;
   int lin, col;
-
+  int soma;
   int colBase = COLUNAS / 2;
+  int linhaCentral = LINHAS / 2;
   int tabuleiro[10][10] = {0};
 
   // // Posicionando navio1 na vertical a partir da lin 3 na col 2
@@ -40,6 +41,7 @@ int main()
   // topo do cone. Valor máximo: 7
   // A variável col determina qual a coluna do tabuleiro que quero colocar o
   // topo do cone. Valor maximo: 5
+  soma = 0;
   for (l = 0, lin = 0; l < LINHAS; l++, lin++)
   {
     for (c = 0, col = 5; c < COLUNAS; c++, col++)
@@ -59,7 +61,7 @@ int main()
       }
       else
       {
-        if ((c >= (colBase - l)) && (c <= (colBase + l)))
+        if ((c >= colBase - soma) && (c <= colBase + soma))
         {
           tabuleiro[lin][col] = 1;
         }
@@ -69,6 +71,45 @@ int main()
         }
       }
     }
+    soma++;
+  }
+
+  // Definindo o octaedro
+  soma = 0;
+  for (l = 0, lin = 4; l < LINHAS; l++, lin++)
+  {
+    for (c = 0, col = 0; c < COLUNAS; c++, col++)
+    {
+      if (!l)
+      {
+        if (c == colBase)
+        {
+          tabuleiro[lin][col] = 1;
+        }
+        else
+        {
+          tabuleiro[lin][col] = 0;
+        }
+      }
+      else
+      {
+        if ((c >= colBase - soma) && (c <= colBase + soma))
+        {
+          tabuleiro[lin][col] = 1;
+        }
+        else
+        {
+          tabuleiro[lin][col] = 0;
+        }
+      }
+    }
+    if (l < linhaCentral)
+    {      
+      soma++;
+    } else
+    {
+      soma--;
+    }    
   }
 
   // Imprimindo o tabuleiro após as inserções
