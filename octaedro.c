@@ -6,7 +6,7 @@
 int main()
 {
   int l, c;
-  int colBase = COLUNAS / 2;
+  int colunaCentral = COLUNAS / 2;
   int linhaCentral = LINHAS / 2;
   int soma = 0;
 
@@ -14,28 +14,14 @@ int main()
   {
     for (c = 0; c < COLUNAS; c++)
     {
-      if (!l)
+      if ((c >= (colunaCentral - soma)) && (c <= (colunaCentral + soma)))
       {
-        if (c == colBase)
-        {
-          printf("1 ");
-        }
-        else
-        {
-          printf("0 ");
-        }
+        printf("1 ");
       }
       else
       {
-        if ((c >= (colBase - soma)) && (c <= (colBase + soma)))
-        {
-          printf("1 ");
-        }
-        else
-        {
-          printf("0 ");
-        }
-      }
+        printf("0 ");
+      }      
     }
     printf("\n");
     if (l < linhaCentral)
