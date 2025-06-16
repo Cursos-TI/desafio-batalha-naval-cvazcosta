@@ -26,19 +26,13 @@ A sequência de artefatos gerados até chegar na solução proposta está expost
 
 ```Plain Text
 1. Determinar o índice da coluna base e inicializar a soma em zero
-  Coluna Base = Dividir o total de colunas da matriz por 2
+  Coluna Central = Total de colunas da matriz ÷ 2
   Soma = 0
 
 2. Criar a estrutura de repetição para criar a matriz cônica
   Loop Externo - Percorre uma Linha por Repetição
     Loop Interno - Percorre uma Coluna por Repetição
-      Se for a 1ª linha da matriz
-        Se a coluna percorrida for igual ao valor da coluna base
-          Imprimir 1
-        Senão
-          Imprimir 0
-      Senão (a partir da 2ª linha)
-        Se a coluna percorrida estiver no intervalo [(colBase - soma), (colBase + soma)]
+        Se a coluna percorrida estiver no intervalo [(colunaCentral - soma), (colunaCentral + soma)]
           Imprimir 1
         Senão
           Imprimir 0
@@ -46,21 +40,27 @@ A sequência de artefatos gerados até chegar na solução proposta está expost
   Incrementa a variável soma
 ```
 
-Evidentemente, para que a forma geométrica tenha simetria, é preciso que o número de colunas informado seja ímpar. Para simplificar, determinei 3 linhas e 5 colunas.
+Evidentemente, para que a forma geométrica tenha simetria, é preciso que (i) o número de colunas seja ímpar e que (ii) a cada linha incluída duas colunas devem ser adicionadas em relação a linha anterior. Para simplificar, determinei 3 linhas e 5 colunas.
 
-A primeira grande ideia foi compreender que o índice da coluna a ser preenchida com o valor 1 na 1ª linha (a coluna base) equivaleria à **metade do total de colunas da matriz**. Isto permitiu com que a lógica da primeira validação do loop interno fosse executada garantindo a posição central do valor único da 1ª linha.
+A primeira grande ideia foi compreender que o índice da coluna a ser preenchida com o valor 1 na 1ª linha, a coluna central, equivaleria à **metade do total de colunas da matriz**. Chamamos este valor de `colunaCentral`.
 
-Mas acredito que a ideia determinante foi encontrar a relação entre a coluna base e a quantidade de repetições ocorridas até o momento `[(colBase - soma), (colBase + soma)]`.
+Mas acredito que a ideia determinante foi encontrar uma relação entre a coluna base e a quantidade de repetições ocorridas, valor que foi armazenado na variável `soma`, na determinação do intervalo dos índices da coluna a serem preenchidos.
 
-Este foi o grande salto que me permitiu resolver o problema de forma mais generalista, isto é, de forma independente da quantidade de linhas e colunas, o código é capaz de gerar a forma geométrica requisitada.
+A relação é como segue: `[(colunaCentral - soma), (colunaCentral + soma)]`.
 
-Desta forma, sempre teremos os valores 1 sendo impressos dentro do intervalo que sempre inclui 1 coluna à esquerda e uma à direita à cada iteração.
+Na 1ª iteração ocorre o preenchimento da 1ª linha da matriz. Essa é a linha que tem apenas a coluna base preenchida.
+
+O valor 1 será atribuído à coordenada apenas se a seguinte condição for verdadeira: `(c >= colunaCentral - soma) && (c <= (colunaCentral + soma))`. Supondo `colunaCentral = 2` isto significa que na 1ª iteração só deve-se imprimir 1 quando a coluna `c` que estiver sendo percorrida no loop estiver num intervalo fechado [2, 2]. Na prática, apenas a coluna central será preenchida.
+
+Na 2ª iteração, o valor da variável `soma` é incrementado e temos a expansão do intervalo que irá admitir os valores unitários na lógica de 1 coluna à esquerda e 1 coluna à direita da coluna base. Assim o intervalo torna-se [1, 3] indicando que apenas as colunas com índices entre 1 e 3 terão 1 em suas coordenadas. O mesmo processo se dará para as linhas subsequentes.
+
+Desta forma, garantimos que a forma cônica possa ser desenhada, considerando-se que foi definida uma quantidade proporcional de linhas e colunas no início do programa.
 
 O código base pode ser visto [aqui](./cone.c).
 
 ---
 
-### Exemplo de saída do código base numa matriz 3x5
+### Exemplo de saída de um cone numa matriz 3x5
 
 ```Plain Text
 0 0 1 0 0
@@ -70,7 +70,7 @@ O código base pode ser visto [aqui](./cone.c).
 1 1 1 1 1
 ```
 
-## Trecho do código utilizado em [`batalhaNaval.c`](./batalhaNaval.c) para a matriz cônica
+### Trecho do código utilizado em [`batalhaNaval.c`](./batalhaNaval.c) para o cone
 
 ```C
 soma = 0;
@@ -78,31 +78,15 @@ for (l = 0, lin = 0; l < LINHAS; l++, lin++)
 {
   for (c = 0, col = 5; c < COLUNAS; c++, col++)
   {
-    // Se for a 1ª linha, colocar o valor 1 apenas no índice central
-    // Senão, colocar nos intervalos definidos
-    if (!l)
+    // Determinando o intervalo dos índices das colunas para os quais os valores devem ser 1 ou 0
+    if ((c >= colunaCentral - soma) && (c <= colunaCentral + soma))
     {
-      if (c == colBase)
-      {
-        tabuleiro[lin][col] = 1;
-      }
-      else
-      {
-        tabuleiro[lin][col] = 0;
-      }
+      tabuleiro[lin][col] = 1;
     }
     else
     {
-      // Determinando o intervalo dos índices das colunas para os quais os valores devem ser 1 ou 0
-      if ((c >= colBase - soma) && (c <= colBase + soma))
-      {
-        tabuleiro[lin][col] = 1;
-      }
-      else
-      {
-        tabuleiro[lin][col] = 0;
-      }
-    }
+      tabuleiro[lin][col] = 0;
+    }    
   }
   soma++;
 }
@@ -118,41 +102,37 @@ Na prática, fiz uso da **forma avançada** de declaração de loops, incluindo 
 
 ```Plain Text
 1. Determinar o índice da coluna base e da linha central e inicializar a soma em zero
-  Coluna Base = Dividir o total de colunas da matriz por 2
-  Linha Central = Divisão do total de linhas da matriz por 2
+  Coluna Central = Total de colunas da matriz ÷ 2
+  Linha Central = Total de linhas da matriz ÷ 2
   Soma = 0
 
 2. Criar a estrutura de repetição para criar a matriz cônica
   Loop Externo - Percorre uma Linha por Repetição
     Loop Interno - Percorre uma Coluna por Repetição
-      Se for a 1ª linha da matriz:
-        Se a coluna percorrida for igual ao valor da coluna base
-          Imprimir 1
-        Senão
-          Imprimir 0
-      Senão (a partir da 2ª linha)
-        Se a coluna percorrida estiver no intervalo [(colBase - soma), (colBase + soma)]
-          Imprimir 1
-        Senão
-          Imprimir 0
-  Pula uma linha
-  Se a linha que está sendo percorrida for menor que a linha central
-    Incrementa a variável soma
-  Senão
-    Decrementa a variável soma
+      Se a coluna percorrida estiver no intervalo [(colunaCentral - soma), (colunaCentral + soma)]
+        Imprimir 1
+      Senão
+        Imprimir 0
+    Pula uma linha
+    Se a linha que está sendo percorrida for menor que a linha central
+      Incrementa a variável soma
+    Senão
+      Decrementa a variável soma
 ```
 
-A diferença entre o cone e o octaedro é que, no caso do último, o número de elementos com o valor 1 começa a reduzir em dois elementos, um em cada extremo, após a linha central.
+A diferença entre o cone e o octaedro é que, no  último, o número de elementos com o valor 1 começa a reduzir em dois elementos, um em cada índice na extremidade, **após a linha central**.
 
-Desta vez, identificamos o valor da linha central e a pusemos em uma estrutura condicional após a conclusão de um ciclo do loop interno.
+Desta vez, identificamos o valor da linha central dividindo o total de linhas por 2 e atribuímos à variável `linhaCentral`. Em seguida a pusemos em uma estrutura condicional após cada repetição de preenchimento de todas as colunas de uma linha.
 
-A condicional verifica se o índice da linha é menor que o da linha central. Em caso positivo, o valor da variável `soma` é incrementado de forma a seguir expandindo a quantidade de valores unitários nas colunas da próxima linha que será preenchida.
+A condicional verifica se o índice da linha que foi percorrida é menor que o da linha central. Em caso positivo, o valor da variável `soma` é incrementado de forma a seguir expandindo a quantidade de valores unitários nas colunas da próxima linha que será preenchida, da mesma forma que no cone.
 
-Quando o valor do índice da linha for maior ou igual ao da linha central, então a variável `soma` é decrementada, começando então a redução gradual dos valores unitários preenchidos, gerando a forma de losango característica do octaedro.
+Quando os valores dos índices da linha percorrida passam a ser igual ou maiores ao da linha central, então a variável `soma` é decrementada. Inicia-se então a redução gradual dos valores unitários preenchidos, gerando a forma de losango característica do octaedro.
 
 O código base pode ser visto [aqui](./octaedro.c).
 
-### Exemplo de saída de habilidade em octaedro numa matriz 3x5
+---
+
+### Exemplo de saída de um octaedro numa matriz 3x5
 
 ```Plain Text
 0 0 1 0 0
@@ -164,7 +144,7 @@ O código base pode ser visto [aqui](./octaedro.c).
 
 ---
 
-## Exemplo do código utilizado em [`batalhaNaval.c`](./batalhaNaval.c) para a matriz octaédrica
+### Trecho do código utilizado em [`batalhaNaval.c`](./batalhaNaval.c) para o octaedro
 
 ```C
 soma = 0;
@@ -172,28 +152,14 @@ for (l = 0, lin = 4; l < LINHAS; l++, lin++)
 {
   for (c = 0, col = 0; c < COLUNAS; c++, col++)
   {
-    if (!l)
+    if ((c >= colunaCentral - soma) && (c <= colunaCentral + soma))
     {
-      if (c == colBase)
-      {
-        tabuleiro[lin][col] = 1;
-      }
-      else
-      {
-        tabuleiro[lin][col] = 0;
-      }
+      tabuleiro[lin][col] = 1;
     }
     else
     {
-      if ((c >= colBase - soma) && (c <= colBase + soma))
-      {
-        tabuleiro[lin][col] = 1;
-      }
-      else
-      {
-        tabuleiro[lin][col] = 0;
-      }
-    }
+      tabuleiro[lin][col] = 0;
+    }    
   }
   if (l < linhaCentral)
   {      
@@ -207,7 +173,44 @@ for (l = 0, lin = 4; l < LINHAS; l++, lin++)
 
 ---
 
-### Exemplo de saída de habilidade em cruz
+## Algoritmo da cruz
+
+```Plain Text
+1. Determinar o índice da coluna base e da linha central e inicializar a soma em zero
+  Coluna Central = Dividir o total de colunas da matriz por 2
+  Linha Central = Divisão do total de linhas da matriz por 2
+
+2. Criar a estrutura de repetição para criar a matriz cônica
+  Loop Externo - Percorre uma Linha por Repetição
+    Se a linha que está sendo percorrida for igual a linha central
+      Soma = colunaCentral
+    Senão
+      Soma = 0
+    Loop Interno - Percorre uma Coluna por Repetição
+      Se a coluna percorrida estiver no intervalo [(colunaCentral - soma), (colunaCentral + soma)]
+        Imprimir 1
+      Senão
+        Imprimir 0
+    Fim Loop Interno
+    Pula uma linha
+    Se a linha que está sendo percorrida for menor que a linha central
+      Incrementa a variável soma
+    Senão
+      Decrementa a variável soma
+  Fim Loop Externo
+```
+
+Assim como no octaedro seria necessário usar os valores da coluna e da linha central.
+
+A diferença é que seria necessário fazer uma validação logo no início do loop de cada linha. Se a linha a ser percorrida fosse a linha central, o valor da variável `soma` seria igual ao da coluna central.
+
+Isso serve para garantir que o intervalo das colunas a serem preenchidas na **linha central** com o valor 1 na validação do loop interno seja o máximo possível `[0, n]`, sendo `n` o valor do maior índice da coluna da matriz.
+
+Para qualquer outra linha, apenas a coluna com índice igual ao da coluna base será preenchido com 1, formando a imagem da cruz.
+
+---
+
+### Exemplo de saída de uma cruz numa matriz 3x5
 
 ```Plain Text
 0 0 1 0 0
@@ -215,4 +218,34 @@ for (l = 0, lin = 4; l < LINHAS; l++, lin++)
 1 1 1 1 1
 
 0 0 1 0 0
+```
+
+---
+
+### Trecho do código utilizado em [`batalhaNaval.c`](./batalhaNaval.c) para a cruz
+
+```C
+for (l = 0, lin = 7; l < LINHAS; l++, lin++)
+{ 
+  // Quando a linha central for percorrida todas as colunas serão 1
+  if (l == linhaCentral)
+  {
+    soma = colunaCentral;
+  } else
+  {
+    soma = 0;
+  }
+
+  for (c = 0, col = 4; c < COLUNAS; c++, col++)    
+  {
+    if ((c >= (colunaCentral - soma)) && (c <= (colunaCentral + soma)))
+    {
+      tabuleiro[lin][col] = 1;
+    }
+    else
+    {
+      tabuleiro[lin][col] = 0;
+    }      
+  }  
+}
 ```
