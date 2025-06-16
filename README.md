@@ -181,8 +181,8 @@ for (l = 0, lin = 4; l < LINHAS; l++, lin++)
 
 ```Plain Text
 1. Determinar o índice da coluna base e da linha central e inicializar a soma em zero
-  Coluna Central = Dividir o total de colunas da matriz por 2
-  Linha Central = Divisão do total de linhas da matriz por 2
+  Coluna Central = Total de colunas da matriz ÷ 2
+  Linha Central = Total de linhas da matriz ÷ 2
 
 2. Criar a estrutura de repetição para criar a matriz cônica
   Loop Externo - Percorre uma Linha por Repetição
@@ -197,16 +197,12 @@ for (l = 0, lin = 4; l < LINHAS; l++, lin++)
         Imprimir 0
     Fim Loop Interno
     Pula uma linha
-    Se a linha que está sendo percorrida for menor que a linha central
-      Incrementa a variável soma
-    Senão
-      Decrementa a variável soma
   Fim Loop Externo
 ```
 
 Assim como no octaedro é necessário usar os valores da **coluna central** e da **linha central**.
 
-A diferença é que se faz necessário fazer uma validação no início do loop de cada linha. Se a linha a ser percorrida for a linha central, o valor da variável `soma` é igual ao da coluna central.
+A diferença é que se faz necessário fazer uma validação no início do loop de cada linha. Se a linha a ser percorrida for a **linha central**, o valor da variável `soma` é igual ao da **coluna central**.
 
 Isso serve para garantir que o intervalo das colunas a serem preenchidas na **linha central** com o valor 1 na validação do loop interno seja o máximo possível `[0, n]`, sendo `n` o valor do maior índice da coluna da matriz.
 
