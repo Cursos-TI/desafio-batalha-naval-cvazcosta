@@ -8,44 +8,30 @@ int main()
   int l, c;
   int lin, col;
   int soma;
-  int colBase = COLUNAS / 2;
+  int colunaCentral = COLUNAS / 2;
   int linhaCentral = LINHAS / 2;
   int tabuleiro[10][10] = {0};
-
-  // Criando uma matriz "cônica"
-  // A variável lin determina qual a linha do tabuleiro que quero colocar o
-  // topo do cone. Valor máximo: 7
-  // A variável col determina qual a coluna do tabuleiro que quero colocar o
-  // topo do cone. Valor maximo: 5
+  
+  /*
+    Definindo o cone
+    A variável lin determina qual a linha do tabuleiro que quero colocar o
+    topo do cone (valor máximo: 7)
+    A variável col determina qual a coluna do tabuleiro que quero colocar o
+    topo do cone (valor máximo: 5)
+  */
   soma = 0;
   for (l = 0, lin = 0; l < LINHAS; l++, lin++)
   {
     for (c = 0, col = 5; c < COLUNAS; c++, col++)
     {
-      // Se for a 1ª linha, colocar o valor 1 apenas no índice central
-      // Senão, colocar nos intervalos definidos
-      if (!l)
+      if ((c >= (colunaCentral - soma)) && (c <= (colunaCentral + soma)))
       {
-        if (c == colBase)
-        {
-          tabuleiro[lin][col] = 1;
-        }
-        else
-        {
-          tabuleiro[lin][col] = 0;
-        }
+        tabuleiro[lin][col] = 1;
       }
       else
       {
-        if ((c >= colBase - soma) && (c <= colBase + soma))
-        {
-          tabuleiro[lin][col] = 1;
-        }
-        else
-        {
-          tabuleiro[lin][col] = 0;
-        }
-      }
+        tabuleiro[lin][col] = 0;
+      }      
     }
     soma++;
   }
@@ -56,29 +42,19 @@ int main()
   {
     for (c = 0, col = 0; c < COLUNAS; c++, col++)
     {
-      if (!l)
+      if ((c >= (colunaCentral - soma)) && (c <= (colunaCentral + soma)))
       {
-        if (c == colBase)
-        {
-          tabuleiro[lin][col] = 1;
-        }
-        else
-        {
-          tabuleiro[lin][col] = 0;
-        }
+        tabuleiro[lin][col] = 1;
       }
       else
       {
-        if ((c >= colBase - soma) && (c <= colBase + soma))
-        {
-          tabuleiro[lin][col] = 1;
-        }
-        else
-        {
-          tabuleiro[lin][col] = 0;
-        }
-      }
+        tabuleiro[lin][col] = 0;
+      }      
     }
+    /*
+      Após o preenchimento da linha central, o intervalo de preenchimento vai
+      reduzindo até que somente a coluna base seja preenchida na última linha
+    */
     if (l < linhaCentral)
     {      
       soma++;
@@ -86,6 +62,31 @@ int main()
     {
       soma--;
     }    
+  }
+  
+  // Definindo a cruz
+  for (l = 0, lin = 7; l < LINHAS; l++, lin++)
+  { 
+    // Quando a linha central for percorrida todas as colunas serão 1
+    if (l == linhaCentral)
+    {
+      soma = colunaCentral;
+    } else
+    {
+      soma = 0;
+    }
+
+    for (c = 0, col = 4; c < COLUNAS; c++, col++)    
+    {
+      if ((c >= (colunaCentral - soma)) && (c <= (colunaCentral + soma)))
+      {
+        tabuleiro[lin][col] = 1;
+      }
+      else
+      {
+        tabuleiro[lin][col] = 0;
+      }      
+    }  
   }
 
   // Imprimindo o tabuleiro após as inserções
@@ -99,4 +100,5 @@ int main()
   }
 
   return (0);
+
 }
